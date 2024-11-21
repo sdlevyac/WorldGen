@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,6 +62,19 @@ namespace WorldGen.General
                 output += "\n";
             }
             return output;
+        }
+        public static void save_rule(int[] rule)
+        {
+            string output = "[";
+            for (int i = 0; i < 9; i++)
+            {
+                output += $"{rule[i]},";
+            }
+            output = output[..^1] + "]";
+            using (StreamWriter w = File.AppendText("../../../Output/myFile.txt"))
+            {
+                w.WriteLine(output);
+            }
         }
     }
 }

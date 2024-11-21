@@ -16,6 +16,8 @@ namespace WorldGen
         private KeyboardState _currentKeyboardState;
         private KeyboardState _previousKeyboardState;
 
+        private bool rule_saved = false;
+
         private int _width = 400;
         private int _height = 250;
 
@@ -78,6 +80,10 @@ namespace WorldGen
             {
                 randomise_rule();
             }
+            if (IsKeyPressed(Keys.S) && !rule_saved)
+            {
+                save_rule();
+            }
 
             // TODO: Add your update logic here
             buffer = tools.gen_grid(_width, _height);
@@ -128,14 +134,13 @@ namespace WorldGen
         private void randomise_rule()
         {
             rule = rules.random_rules();
-            Debug.Write("[");
-            for (int i = 0; i < rule.Length; i++)
-            {
-                Debug.Write($"{rule[i]},");
-            }
-            Debug.WriteLine("]");
+            rule_saved = false;
         }
-
+        private void save_rule()
+        {
+            tools.save_rule(rule);
+            rule_saved = true;
+        }
         private bool IsKeyPressed(Keys key)
         {
             return _currentKeyboardState.IsKeyDown(key) && !_previousKeyboardState.IsKeyDown(key);
