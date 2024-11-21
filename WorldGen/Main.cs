@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using WorldGen.Cells;
 using WorldGen.General;
+using WorldGen.World_Generation;
 
 namespace WorldGen
 {
@@ -20,9 +21,10 @@ namespace WorldGen
 
         private int _width = 400;
         private int _height = 250;
+        private Generator generator;
 
         private static Texture2D rect;
-        private int _pixelWidth = 2;
+        private int _pixelWidth = 4;
         private static Color[] colours = new Color[]
         {
             Color.Black,
@@ -32,7 +34,6 @@ namespace WorldGen
         private int[] rule = rules.random_rules();//conway;
         private int[][] neighbourhood = neighbourhoods.moore;
         private int[,] grid;
-        private int[,] buffer;
 
         private int neighbours;
 
@@ -47,11 +48,13 @@ namespace WorldGen
         {
             // TODO: Add your initialization logic here
             grid = tools.randomise_grid(_width, _height);
+            generator = new Generator("test");
+            generator.push_rule(rules.conway);
 
             TargetElapsedTime = TimeSpan.FromSeconds(1d / 15d);
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 800;
-            _graphics.PreferredBackBufferHeight = 500;
+            _graphics.PreferredBackBufferWidth = _width * _pixelWidth;
+            _graphics.PreferredBackBufferHeight = _height * _pixelWidth;
             _graphics.ApplyChanges();
             base.Initialize();
         }
@@ -86,28 +89,8 @@ namespace WorldGen
             }
 
             // TODO: Add your update logic here
-            buffer = tools.gen_grid(_width, _height);
-            for (int i = 0; i < _width; i++)
-            {
-                for (int j = 0; j < _height; j++)
-                {
-                    neighbours = 0;
-                    for (int n = 0; n < neighbourhood.Length; n++)
-                    {
-                        int[] neighbour = neighbourhood[n];
-                        neighbours += grid[tools.mod(i + neighbour[0], _width), tools.mod(j + neighbour[1], _height)];
-                    }
-                    if (rule[neighbours] != 2)
-                    {
-                        buffer[i, j] = rule[neighbours];
-                    }
-                    else
-                    {
-                        buffer[i, j] = grid[i, j];
-                    }
-                }
-            }
-            grid = tools.swap_buffer(buffer);
+            grid = generator.execute(_width, _height, grid);
+            generator.push_rule(rule);
 
             base.Update(gameTime);
         }

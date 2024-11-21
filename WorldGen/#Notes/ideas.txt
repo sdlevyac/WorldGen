@@ -1,0 +1,13 @@
+﻿add some kind of queue
+
+can add generation steps
+
+each one is executed and then popped
+
+that way we can add e.g.
+	one gen of island
+	few gens of smoothing
+	one gen of body-of-water finder
+	several gens of slope solver 
+
+and have them execute in order
