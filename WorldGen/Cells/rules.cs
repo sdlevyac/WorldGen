@@ -17,6 +17,9 @@ namespace WorldGen.Cells
         //2 -> no change
         public static int[] conway = new int[] { 0, 0, 2, 1, 0, 0, 0, 0, 0 };
 
+        //testing...
+        public static int[] flood = new int[] { 2, 1, 1, 1, 1, 1, 1, 1, 1 };
+
         public static int[] random_rules()
         {
             //in 1984...

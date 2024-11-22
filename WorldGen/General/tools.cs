@@ -42,6 +42,25 @@ namespace WorldGen.General
             }
             return grid;
         }
+        public static int[,] seed_grid(int width, int height, int seed, int seeds)
+        {
+            int[,] grid = gen_grid(width, height);
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    grid[i, j] = 0;
+                }
+            }
+            int si, sj;
+            for (int i = 0; i < seeds; i++)
+            {
+                si = rnd.Next(width);
+                sj = rnd.Next(height);
+                grid[si, sj] = rnd.Next(seed + 1);
+            }
+            return grid;
+        }
         public static int mod(int x, int y)
         {
             int rem = x % y;

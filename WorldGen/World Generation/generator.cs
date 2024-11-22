@@ -17,6 +17,8 @@ namespace WorldGen.World_Generation
         private int[][] neighbourhood = neighbourhoods.moore;
         private int[,] buffer;
         private int neighbours;
+        private int neighbourVal;
+        private int neighbourMax;
         public Generator(string name = "unnamed generator")
         {
             _name = name;
@@ -26,7 +28,11 @@ namespace WorldGen.World_Generation
         {
             rules.Add(_rule);
         }
-        public int[,] execute(int _width, int _height, int[,] grid)
+        public void push_action(Action a)
+        {
+            actions.Add(a);
+        }
+        public int[,] execute_ca(int _width, int _height, int[,] grid, int cutoff = -1)
         {
             rule = rules[0];
             rules.RemoveAt(0);
@@ -36,14 +42,17 @@ namespace WorldGen.World_Generation
                 for (int j = 0; j < _height; j++)
                 {
                     neighbours = 0;
+                    neighbourMax = 0;
                     for (int n = 0; n < neighbourhood.Length; n++)
                     {
                         int[] neighbour = neighbourhood[n];
-                        neighbours += grid[tools.mod(i + neighbour[0], _width), tools.mod(j + neighbour[1], _height)];
+                        neighbourVal = grid[tools.mod(i + neighbour[0], _width), tools.mod(j + neighbour[1], _height)];
+                        neighbours += neighbourVal != 0 ? 1 : 0;
+                        neighbourMax = Math.Max(neighbourMax, neighbourVal);
                     }
-                    if (rule[neighbours] != 2)
+                    if (rule[neighbours] != 2 && tools.rnd.Next(10) > cutoff)
                     {
-                        buffer[i, j] = rule[neighbours];
+                        buffer[i, j] = rule[neighbours] * neighbourMax;
                     }
                     else
                     {
