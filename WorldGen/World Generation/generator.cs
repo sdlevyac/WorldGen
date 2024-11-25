@@ -23,6 +23,7 @@ namespace WorldGen.World_Generation
         {
             _name = name;
             rules = new List<int[]>();
+            actions = new List<Action>();
         }
         public void push_rule(int[] _rule)
         {
@@ -52,7 +53,7 @@ namespace WorldGen.World_Generation
                     }
                     if (rule[neighbours] != 2 && tools.rnd.Next(10) > cutoff)
                     {
-                        buffer[i, j] = rule[neighbours] * neighbourMax;
+                        buffer[i, j] = (rule[neighbours] * neighbourMax) + 1;
                     }
                     else
                     {

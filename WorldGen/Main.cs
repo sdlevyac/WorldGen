@@ -8,6 +8,7 @@ using WorldGen.Cells;
 using WorldGen.General;
 using WorldGen.World_Generation;
 using WorldGen.Drawing;
+using System.Collections.Generic;
 
 namespace WorldGen
 {
@@ -27,6 +28,11 @@ namespace WorldGen
 
         private static Texture2D rect;
         private int _pixelWidth = 2;
+        private string colourMode = "1bit";
+        private Dictionary<string, Action> colourModes = new Dictionary<string, Action>
+        {
+            { "1bit" , () => {  } }
+        };
 
         private int[] rule = rules.flood; //rules.conway; //rules.random_rules();
         private int[][] neighbourhood = neighbourhoods.moore;
@@ -88,15 +94,21 @@ namespace WorldGen
             {
                 save_rule();
             }
+            if (!IsKeyPressed(Keys.D))
+            {
+                if (colourMode == "1bit")
+                {
+                    colourMode = "gradient";
+                }
+                else
+                {
+                    colourMode = "1bit";
+                }
+            }
 
             // TODO: Add your update logic here
             generation = (generation + 1) % 5;
-            if (generation == 4)
-            {
-                rule = rules.random_rules();
-            }
             grid = generator.execute_ca(_width, _height, grid);
-
             generator.push_action(() => generator.execute_ca(_width, _height, grid));   //testing the idea of a queue of actions instead of a queue of rules
                                                                                         //this would allow different types of actions to be executed
                                                                                         //instead of just 2-state CA rules
@@ -115,11 +127,15 @@ namespace WorldGen
             {
                 for (int j = 0; j < _height; j++)
                 {
-                    _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.base_colours[grid[i,j]]);
+                    draw_cell_1bit(i, j, grid[i, j]);
                 }
             }
             _spriteBatch.End();
             base.Draw(gameTime);
+        }
+        public void draw_cell_1bit(int i, int j, int value)
+        {
+            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.base_colours[value]);
         }
         private void randomise_grid()
         {
