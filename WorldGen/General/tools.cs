@@ -57,7 +57,7 @@ namespace WorldGen.General
             {
                 si = rnd.Next(width);
                 sj = rnd.Next(height);
-                grid[si, sj] = rnd.Next(seed + 1);
+                grid[si, sj] = seed == 1 ? 1 : i;
             }
             return grid;
         }
@@ -94,6 +94,10 @@ namespace WorldGen.General
             {
                 w.WriteLine(output);
             }
+        }
+        public static int clamp_1bit(int value)
+        {
+            return value == 0 ? 0 : 1;
         }
     }
 }

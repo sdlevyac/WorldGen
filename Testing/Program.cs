@@ -10,6 +10,8 @@
 
             // If the signs of x and y are the same, we get `rem + 0`, otherwise we get `rem + y`
             Console.WriteLine(rem + (((x ^ y) >>> 31)) * y);
+            Console.WriteLine( 100 % 1 );
         }
+
     }
 }
