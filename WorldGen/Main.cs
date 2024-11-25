@@ -148,7 +148,8 @@ namespace WorldGen
         }
         private void draw_cell_region(int i, int j, int value)
         {
-            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.region_colours[tools.mod(value, colours.region_colours.Length)]);
+            value = value == 0 ? colours.region_colours.Length - 1 : tools.mod(value, colours.region_colours.Length - 1);
+            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.region_colours[value]);
         }
         private void randomise_grid()
         {

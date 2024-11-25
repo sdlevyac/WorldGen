@@ -66,6 +66,14 @@ namespace WorldGen.General
             int rem = x % y;
             return rem + (((x ^ y) < 0) ? y : 0);
         }
+        public static int non_zero(int x, int y)
+        {
+            if (x == 0)
+            {
+                return 0;
+            }
+            return mod(x, y - 1);
+        }
         public static string print_grid(int[,] grid)
         {
             char[] glyphs = new char[] { '.', '#' };

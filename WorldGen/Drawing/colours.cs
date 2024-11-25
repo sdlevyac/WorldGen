@@ -19,7 +19,6 @@ namespace WorldGen.Drawing
 
         public static Color[] region_colours = new Color[]
         {
-            Color.Black,
             Color.Red,
             Color.Blue,
             Color.Green,
@@ -27,6 +26,7 @@ namespace WorldGen.Drawing
             Color.Purple,
             Color.Orange,
             Color.Pink,
+            Color.Black,
         };
     }
 }
