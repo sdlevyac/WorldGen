@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldGen.Cells;
+using System.Diagnostics;
 
 namespace WorldGen.General
 {
@@ -57,8 +58,39 @@ namespace WorldGen.General
             {
                 si = rnd.Next(width);
                 sj = rnd.Next(height);
+                
                 grid[si, sj] = seed == 1 ? 1 : i;
             }
+            return grid;
+        }
+        public static int[,] rectangle(int width, int height)
+        {
+            int[,] grid = gen_grid(width, height);
+            int width_border = width / 10;
+            int height_border = height / 10;
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    grid[i, j] = -1;
+                }
+            }
+            for (int i = width_border; i < width - width_border; i++)
+            {
+                for (int j = height_border; j < height - height_border; j++)
+                {
+                    if (i == width_border || i == width - width_border ||
+                        j == height_border || j == height - height_border)
+                    {
+                        grid[i, j] = 1;
+                    }
+                    else
+                    {
+                        grid[i,j] = 0;
+                    }
+                }
+            }
+
             return grid;
         }
         public static int mod(int x, int y)

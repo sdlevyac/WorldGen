@@ -27,12 +27,12 @@ namespace WorldGen
         private int generation = 0;
 
         private static Texture2D rect;
-        private int _pixelWidth = 2;
+        private int _pixelWidth = 4;
         private string colourMode = "regions";
         private Dictionary<string, Action<int, int, int>> colourModes;
 
         private int[] rule = rules.conway; //rules.random_rules();
-        private int[][] neighbourhood = neighbourhoods.moore;
+        //private int[][] neighbourhood = neighbourhoods.moore;
         private int[,] grid;
 
         private int neighbours;
@@ -47,10 +47,11 @@ namespace WorldGen
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            grid = tools.seed_grid(_width, _width, 0, 100);//randomise_grid(_width, _height);
+            grid = tools.rectangle(_width, _height); //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
+            generator.set_neighbourhood(neighbourhoods.von_neumann);
             generator.push_rule(rule);
-            generator.push_action(generator.execute_floodfill);
+            //generator.push_action(generator.execute_floodfill);
             colourModes = new Dictionary<string, Action<int, int, int>>();
             colourModes["1bit"] = draw_cell_1bit;
             colourModes["gradient"] = draw_cell_gradient;
@@ -116,8 +117,8 @@ namespace WorldGen
             generation = (generation + 1) % 5;
             grid = generator.step(_width, _height, grid);
             //generator.push_action(generator.execute_ca); 
-            generator.push_action(generator.execute_floodfill);
-            generator.push_rule(rule);
+            //generator.push_action(generator.execute_floodfill);
+            //generator.push_rule(rule);
 
             base.Update(gameTime);
         }
@@ -157,7 +158,7 @@ namespace WorldGen
         }
         private void seed_grid()
         {
-            grid = tools.seed_grid(_width, _height, 1, 5);
+            grid = tools.seed_grid(_width, _height, 0, 50);
         }
         private void randomise_rule()
         {

@@ -19,13 +19,19 @@ namespace WorldGen.Drawing
 
         public static Color[] region_colours = new Color[]
         {
-            Color.Red,
-            Color.Blue,
-            Color.Green,
-            Color.Yellow,
-            Color.Purple,
-            Color.Orange,
-            Color.Pink,
+            Color.CadetBlue,
+            Color.CornflowerBlue,
+            Color.Coral,
+            Color.LightBlue,
+            Color.LightCoral,
+            Color.LightCyan,
+            Color.LightGoldenrodYellow,
+            Color.LightGreen,
+            Color.LightPink,
+            Color.LightSalmon,
+            Color.LightSeaGreen,
+            Color.LightSkyBlue,
+            Color.LightYellow,
             Color.Black,
         };
     }

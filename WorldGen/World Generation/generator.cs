@@ -14,7 +14,7 @@ namespace WorldGen.World_Generation
         private List<int[]> rules;
         private List<Func<int, int, int[,], int[,]>> steps;
         private int[] rule;
-        private int[][] neighbourhood = neighbourhoods.moore;
+        private int[][] neighbourhood; // = neighbourhoods.moore;
         private int[,] buffer;
         private int neighbours;
         private int neighbourVal;
@@ -32,6 +32,10 @@ namespace WorldGen.World_Generation
         public void push_action(Func<int, int, int[,], int[,]> function)
         {
             steps.Add(function);
+        }
+        public void set_neighbourhood(int[][] _neighbourhood) 
+        {
+            neighbourhood = _neighbourhood;
         }
         public int[,] execute_ca(int _width, int _height, int[,] grid)
         {

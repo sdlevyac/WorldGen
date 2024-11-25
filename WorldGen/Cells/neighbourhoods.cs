@@ -18,5 +18,11 @@ namespace WorldGen.Cells
             new int[] { -1, 0 },
             new int[] { -1, -1 }
         };
+        public static int[][] von_neumann = new int[][] {
+            new int[] { 1, 0 },
+            new int[] { 0, 1 },
+            new int[] { 0, -1 },
+            new int[] { -1, 0 },
+        };
     }
 }
