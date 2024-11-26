@@ -21,13 +21,13 @@ namespace WorldGen
 
         private bool rule_saved = false;
 
-        private int _width = 400;
+        private int _width = 250;
         private int _height = 250;
         private Generator generator;
         private int generation = 0;
 
         private static Texture2D rect;
-        private int _pixelWidth = 2;
+        private int _pixelWidth;// = 16;
         private string colourMode = "regions";
         private Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>> colourModes;
 
@@ -46,12 +46,13 @@ namespace WorldGen
 
         protected override void Initialize()
         {
+            _pixelWidth = 2;
             // TODO: Add your initialization logic here
             grid = tools.rectangle(_width, _height); //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
             generator.set_neighbourhood(neighbourhoods.von_neumann);
             generator.push_rule(rule);
-            //generator.push_action(generator.execute_floodfill);
+            generator.push_action(generator.execute_ca_floodfill);
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
             colourModes["1bit"] = drawing.draw_cell_1bit;
             colourModes["gradient"] = drawing.draw_cell_gradient;
@@ -116,8 +117,12 @@ namespace WorldGen
             // TODO: Add your update logic here
             generation = (generation + 1) % 5;
             grid = generator.step(_width, _height, grid);
-            //generator.push_action(generator.execute_ca); 
-            //generator.push_action(generator.execute_floodfill);
+            //generator.push_action(generator.execute_ca);
+            if (generator.gens_eq < 10)
+            {
+                Debug.WriteLine($"system equilibrium: {generator.gens_eq}");
+                generator.push_action(generator.execute_ca_floodfill);
+            }           
             //generator.push_rule(rule);
 
             base.Update(gameTime);

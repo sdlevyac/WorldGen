@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,24 +13,28 @@ namespace WorldGen.World_Generation
     {
         private string _name;
         private List<int[]> rules;
-        private List<Func<int, int, int[,], int[,]>> steps;
+        private List<Func<int, int, int[,], int[], int[,]>> steps;
         private int[] rule;
         private int[][] neighbourhood; // = neighbourhoods.moore;
         private int[,] buffer;
         private int neighbours;
         private int neighbourVal;
         private int cutoff = -1;
+        public bool eq = false; // is the system in equilibrium? after each step this will be evaluated
+        public int gens_eq = 0;
+        public List<int> targets;
         public Generator(string name = "unnamed generator")
         {
             _name = name;
             rules = new List<int[]>();
-            steps = new List<Func<int, int, int[,], int[,]>>();
+            steps = new List<Func<int, int, int[,], int[], int[,]>>();
+            targets = new List<int>();
         }
         public void push_rule(int[] _rule)
         {
             rules.Add(_rule);
         }
-        public void push_action(Func<int, int, int[,], int[,]> function)
+        public void push_action(Func<int, int, int[,], int[], int[,]> function)
         {
             steps.Add(function);
         }
@@ -37,7 +42,7 @@ namespace WorldGen.World_Generation
         {
             neighbourhood = _neighbourhood;
         }
-        public int[,] execute_ca(int _width, int _height, int[,] grid)
+        public int[,] execute_ca(int _width, int _height, int[,] grid, int[] _param)
         {
             rule = rules[0];
             rules.RemoveAt(0);
@@ -66,7 +71,7 @@ namespace WorldGen.World_Generation
             //grid = tools.swap_buffer(buffer);
             return buffer;
         }
-        public int[,] execute_floodfill(int _width, int _height, int[,] grid)
+        public int[,] execute_ca_floodfill(int _width, int _height, int[,] grid, int[] param)
         {
             buffer = tools.gen_grid(_width, _height);
             List<int> neighbourVals = new List<int>();
@@ -87,7 +92,7 @@ namespace WorldGen.World_Generation
                                 neighbourVals.Add(neighbourVal);
                             }
                         }
-                        if (neighbourVals.Count != 0 && tools.rnd.Next(0, 10) > 5)
+                        if (neighbourVals.Count != 0 && neighbourVals.Sum() > 0 && tools.rnd.Next(0, 10) > 5)
                         {
                             buffer[i, j] = neighbourVals[tools.rnd.Next(0, neighbourVals.Count)];
                         }
@@ -107,9 +112,24 @@ namespace WorldGen.World_Generation
             {
                 return grid;
             }
-            int[,] gridNext = steps[0](_width, _height, grid);
+            int[,] gridNext = steps[0](_width, _height, grid, new int[] { });
             steps.RemoveAt(0);
+            any_changes(_width, _height, grid, gridNext);
             return gridNext;
+        }
+        private void any_changes(int _width, int _height, int[,] grid, int[,] gridNext)
+        {
+            for (int i = 0; i < _width; i++)
+            {
+                for (int j = 0; j < _height; j++)
+                {
+                    if (grid[i,j] != gridNext[i,j])
+                    {
+                        gens_eq = 0;
+                    }
+                }
+            }
+            gens_eq++;
         }
     }
 }

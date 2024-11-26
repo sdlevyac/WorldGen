@@ -68,29 +68,16 @@ namespace WorldGen.General
             int[,] grid = gen_grid(width, height);
             int width_border = width / 10;
             int height_border = height / 10;
-            for (int i = 0; i < width; i++)
+            for (int i = width_border; i <= width - width_border; i++)
             {
-                for (int j = 0; j < height; j++)
-                {
-                    grid[i, j] = -1;
-                }
+                grid[i, height_border] = 1;
+                grid[i, height - height_border] = 1;
             }
-            for (int i = width_border; i < width - width_border; i++)
+            for (int j = height_border; j <= height - height_border; j++)
             {
-                for (int j = height_border; j < height - height_border; j++)
-                {
-                    if (i == width_border || i == width - width_border ||
-                        j == height_border || j == height - height_border)
-                    {
-                        grid[i, j] = 1;
-                    }
-                    else
-                    {
-                        grid[i,j] = 0;
-                    }
-                }
+                grid[width_border, j] = 1;
+                grid[width - width_border, j] = 1;
             }
-
             return grid;
         }
         public static int mod(int x, int y)
