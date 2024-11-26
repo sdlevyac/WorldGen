@@ -27,9 +27,9 @@ namespace WorldGen
         private int generation = 0;
 
         private static Texture2D rect;
-        private int _pixelWidth = 4;
+        private int _pixelWidth = 2;
         private string colourMode = "regions";
-        private Dictionary<string, Action<int, int, int>> colourModes;
+        private Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>> colourModes;
 
         private int[] rule = rules.conway; //rules.random_rules();
         //private int[][] neighbourhood = neighbourhoods.moore;
@@ -52,10 +52,10 @@ namespace WorldGen
             generator.set_neighbourhood(neighbourhoods.von_neumann);
             generator.push_rule(rule);
             //generator.push_action(generator.execute_floodfill);
-            colourModes = new Dictionary<string, Action<int, int, int>>();
-            colourModes["1bit"] = draw_cell_1bit;
-            colourModes["gradient"] = draw_cell_gradient;
-            colourModes["regions"] = draw_cell_region;
+            colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
+            colourModes["1bit"] = drawing.draw_cell_1bit;
+            colourModes["gradient"] = drawing.draw_cell_gradient;
+            colourModes["regions"] = drawing.draw_cell_region;
 
             TargetElapsedTime = TimeSpan.FromSeconds(1d / 15d);
             _graphics.IsFullScreen = false;
@@ -132,25 +132,11 @@ namespace WorldGen
             {
                 for (int j = 0; j < _height; j++)
                 {
-                    colourModes[colourMode](i, j, grid[i, j]); //draw_cell_1bit(i, j, grid[i, j]);
+                    colourModes[colourMode](i, j, grid[i, j], _pixelWidth, _spriteBatch, rect); //draw_cell_1bit(i, j, grid[i, j]);
                 }
             }
             _spriteBatch.End();
             base.Draw(gameTime);
-        }
-        private void draw_cell_1bit(int i, int j, int value)
-        {
-            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.base_colours[tools.clamp_1bit(value)]);
-        }
-        private void draw_cell_gradient(int i, int j, int value)
-        {
-            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), new Color(value, 0, 0));
-
-        }
-        private void draw_cell_region(int i, int j, int value)
-        {
-            value = value == 0 ? colours.region_colours.Length - 1 : tools.mod(value, colours.region_colours.Length - 1);
-            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.region_colours[value]);
         }
         private void randomise_grid()
         {
