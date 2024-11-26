@@ -140,19 +140,20 @@ namespace WorldGen.World_Generation
                     int nj = j + neighbour[1];
                     if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && buffer[ni, nj] == 0)
                     {
-                        buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + 1;
-                        targets.Add(buffer[ni, nj]);
+                        //buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + 1;
+                        //targets.Add(buffer[ni, nj]);
+                        //queue.Add(new int[] { ni, nj });
                         queue.Add(new int[] { ni, nj });
-                        //    queue.Add(new int[] { ni, nj });
-                        //if (tools.rnd.Next(0,10) > 6)
-                        //{
-                        //    buffer[ni, nj] = buffer[i, j];
-                        //    queue.Add(new int[] { ni, nj });
-                        //}
-                        //else
-                        //{
-                        //    queue.Add(new int[] { i, j });
-                        //}
+                        if (tools.rnd.Next(0, 10) > 6)
+                        {
+                            buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + 1;
+                            targets.Add(buffer[ni, nj]);
+                            queue.Add(new int[] { ni, nj });
+                        }
+                        else
+                        {
+                            queue.Add(new int[] { i, j });
+                        }
                     }
                 }
             }

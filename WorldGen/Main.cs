@@ -21,8 +21,8 @@ namespace WorldGen
 
         private bool rule_saved = false;
 
-        private int _width = 250;
-        private int _height = 250;
+        private int _width = 50;
+        private int _height = 50;
         private Generator generator;
         private int generation = 0;
 
@@ -46,13 +46,13 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 2;
+            _pixelWidth = 20;
             // TODO: Add your initialization logic here
             grid = tools.rectangle(_width, _height); //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
             generator.set_neighbourhood(neighbourhoods.von_neumann);
             generator.push_rule(rule);
-            generator.push_action(generator.execute_traditional_floodfill); //generator.execute_ca_floodfill);
+
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
             colourModes["1bit"] = drawing.draw_cell_1bit;
             colourModes["gradient"] = drawing.draw_cell_gradient;
@@ -62,21 +62,27 @@ namespace WorldGen
             //generator.queue.Add(new int[] { _width / 2, _height / 2 });
             //generator.targets.Add(1);
 
-            grid[0, 0] = -1;
-            generator.queue.Add(new int[] { 0, 0 });
-            generator.targets.Add(-1);
+            basic_rectangle_flood();
 
             //generator.targets.Add(1);
 
 
-            TargetElapsedTime = TimeSpan.FromSeconds(1d / 15d);
+            TargetElapsedTime = TimeSpan.FromSeconds(1d / 100d);
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = _width * _pixelWidth;
             _graphics.PreferredBackBufferHeight = _height * _pixelWidth;
             _graphics.ApplyChanges();
             base.Initialize();
         }
-
+        private void basic_rectangle_flood()
+        {
+            generator.push_action(generator.execute_traditional_floodfill);
+            int x = 0; //_width / 2; // 0;
+            int y = 0; // _height / 2; //0;
+            grid[x, y] = -1;
+            generator.queue.Add(new int[] { x, y });
+            generator.targets.Add(-1);
+        }
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
