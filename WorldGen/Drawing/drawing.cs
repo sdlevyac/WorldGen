@@ -18,7 +18,7 @@ namespace WorldGen.Drawing
         }
         public static void draw_cell_gradient(int i, int j, int value, int _pixelWidth, SpriteBatch _spriteBatch, Texture2D rect)
         {
-            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), new Color(0, value * 10, 0));
+            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), new Color(0, value * 2, 0));
 
         }
         public static void draw_cell_region(int i, int j, int value, int _pixelWidth, SpriteBatch _spriteBatch, Texture2D rect)

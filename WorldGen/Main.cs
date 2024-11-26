@@ -18,11 +18,12 @@ namespace WorldGen
         private SpriteBatch _spriteBatch;
         private KeyboardState _currentKeyboardState;
         private KeyboardState _previousKeyboardState;
+        private bool button_pressed;
 
         private bool rule_saved = false;
 
-        private int _width = 50;
-        private int _height = 50;
+        private int _width = 250;
+        private int _height = 250;
         private Generator generator;
         private int generation = 0;
 
@@ -46,7 +47,8 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 20;
+            _pixelWidth = 4;
+            button_pressed = false;
             // TODO: Add your initialization logic here
             grid = tools.rectangle(_width, _height); //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
@@ -58,13 +60,13 @@ namespace WorldGen
             colourModes["gradient"] = drawing.draw_cell_gradient;
             colourModes["regions"] = drawing.draw_cell_region;
 
-            //grid[_width / 2, _height / 2] = 1;
-            //generator.queue.Add(new int[] { _width / 2, _height / 2 });
-            //generator.targets.Add(1);
-
             basic_rectangle_flood();
-
-            //generator.targets.Add(1);
+            // random fill on screen
+            // apply gap of 0s about 5-ish wide around the edge
+            // apply "cave" stabilising rule (like [0,0,0,0,1,2,2,2,2])
+            // one equilibrium is reached - flood fill from top left to find "ocean"
+            // find "shoreline" and add each cell to queue
+            // flood-fill-slope from edge of "islands"
 
 
             TargetElapsedTime = TimeSpan.FromSeconds(1d / 100d);
@@ -81,7 +83,6 @@ namespace WorldGen
             int y = 0; // _height / 2; //0;
             grid[x, y] = -1;
             generator.queue.Add(new int[] { x, y });
-            generator.targets.Add(-1);
         }
         protected override void LoadContent()
         {
@@ -137,10 +138,7 @@ namespace WorldGen
             //generator.push_action(generator.execute_ca);
             generator.push_action(generator.execute_traditional_floodfill);
             if (generator.gens_eq > 10)
-            {
-                //Debug.WriteLine($"system equilibrium: {generator.gens_eq}");
-                generator.targets.Clear();
-                generator.targets.Add(1);
+            {               
                 for (int i = 0; i < _width; i++)
                 {
                     for (int j = 0; j < _width; j++)
@@ -153,11 +151,7 @@ namespace WorldGen
                     }
                 }
                 generator.push_action(generator.execute_traditional_floodfill);
-
-                //generator.push_action(generator.execute_ca_floodfill);
             }           
-            //generator.push_rule(rule);
-
             base.Update(gameTime);
         }
 

@@ -22,14 +22,12 @@ namespace WorldGen.World_Generation
         private int cutoff = -1;
         public bool eq = false; // is the system in equilibrium? after each step this will be evaluated
         public int gens_eq = 0;
-        public List<int> targets;
         public List<int[]> queue;
         public Generator(string name = "unnamed generator")
         {
             _name = name;
             rules = new List<int[]>();
             steps = new List<Func<int, int, int[,], int[,]>>();
-            targets = new List<int>();
             queue = new List<int[]>();
         }
         public void push_rule(int[] _rule)
@@ -124,30 +122,21 @@ namespace WorldGen.World_Generation
             }
             int steps_this_turn = queue.Count;
             for (int c = 0; c < steps_this_turn; c++)
-            //while (queue.Count != 0)
             {
                 int[] coords = queue[0];
                 int i = coords[0];
                 int j = coords[1];
                 queue.RemoveAt(0);
-                if (!targets.Contains(buffer[i, j]))
-                {
-                    return buffer;
-                }
                 foreach (int[] neighbour in neighbourhood)
                 {
                     int ni = i + neighbour[0];
                     int nj = j + neighbour[1];
                     if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && buffer[ni, nj] == 0)
                     {
-                        //buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + 1;
-                        //targets.Add(buffer[ni, nj]);
-                        //queue.Add(new int[] { ni, nj });
-                        queue.Add(new int[] { ni, nj });
-                        if (tools.rnd.Next(0, 10) > 6)
+                        if (tools.rnd.Next(0, 10) > 8)
                         {
-                            buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + 1;
-                            targets.Add(buffer[ni, nj]);
+                            buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + tools.rnd.Next(0,3);
+                            //targets.Add(buffer[ni, nj]);
                             queue.Add(new int[] { ni, nj });
                         }
                         else
