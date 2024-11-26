@@ -52,11 +52,22 @@ namespace WorldGen
             generator = new Generator("test");
             generator.set_neighbourhood(neighbourhoods.von_neumann);
             generator.push_rule(rule);
-            generator.push_action(generator.execute_ca_floodfill);
+            generator.push_action(generator.execute_traditional_floodfill); //generator.execute_ca_floodfill);
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
             colourModes["1bit"] = drawing.draw_cell_1bit;
             colourModes["gradient"] = drawing.draw_cell_gradient;
             colourModes["regions"] = drawing.draw_cell_region;
+
+            //grid[_width / 2, _height / 2] = 1;
+            //generator.queue.Add(new int[] { _width / 2, _height / 2 });
+            //generator.targets.Add(1);
+
+            grid[0, 0] = -1;
+            generator.queue.Add(new int[] { 0, 0 });
+            generator.targets.Add(-1);
+
+            //generator.targets.Add(1);
+
 
             TargetElapsedTime = TimeSpan.FromSeconds(1d / 15d);
             _graphics.IsFullScreen = false;
@@ -118,10 +129,26 @@ namespace WorldGen
             generation = (generation + 1) % 5;
             grid = generator.step(_width, _height, grid);
             //generator.push_action(generator.execute_ca);
-            if (generator.gens_eq < 10)
+            generator.push_action(generator.execute_traditional_floodfill);
+            if (generator.gens_eq > 10)
             {
-                Debug.WriteLine($"system equilibrium: {generator.gens_eq}");
-                generator.push_action(generator.execute_ca_floodfill);
+                //Debug.WriteLine($"system equilibrium: {generator.gens_eq}");
+                generator.targets.Clear();
+                generator.targets.Add(1);
+                for (int i = 0; i < _width; i++)
+                {
+                    for (int j = 0; j < _width; j++)
+                    {
+                        if (grid[i, j] == 1)
+                        {
+                            generator.queue.Add(new int[] { i, j });
+
+                        }
+                    }
+                }
+                generator.push_action(generator.execute_traditional_floodfill);
+
+                //generator.push_action(generator.execute_ca_floodfill);
             }           
             //generator.push_rule(rule);
 

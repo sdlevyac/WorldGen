@@ -13,7 +13,7 @@ namespace WorldGen.World_Generation
     {
         private string _name;
         private List<int[]> rules;
-        private List<Func<int, int, int[,], int[], int[,]>> steps;
+        private List<Func<int, int, int[,], int[,]>> steps;
         private int[] rule;
         private int[][] neighbourhood; // = neighbourhoods.moore;
         private int[,] buffer;
@@ -23,18 +23,20 @@ namespace WorldGen.World_Generation
         public bool eq = false; // is the system in equilibrium? after each step this will be evaluated
         public int gens_eq = 0;
         public List<int> targets;
+        public List<int[]> queue;
         public Generator(string name = "unnamed generator")
         {
             _name = name;
             rules = new List<int[]>();
-            steps = new List<Func<int, int, int[,], int[], int[,]>>();
+            steps = new List<Func<int, int, int[,], int[,]>>();
             targets = new List<int>();
+            queue = new List<int[]>();
         }
         public void push_rule(int[] _rule)
         {
             rules.Add(_rule);
         }
-        public void push_action(Func<int, int, int[,], int[], int[,]> function)
+        public void push_action(Func<int, int, int[,], int[,]> function)
         {
             steps.Add(function);
         }
@@ -42,7 +44,7 @@ namespace WorldGen.World_Generation
         {
             neighbourhood = _neighbourhood;
         }
-        public int[,] execute_ca(int _width, int _height, int[,] grid, int[] _param)
+        public int[,] execute_ca(int _width, int _height, int[,] grid)
         {
             rule = rules[0];
             rules.RemoveAt(0);
@@ -71,7 +73,7 @@ namespace WorldGen.World_Generation
             //grid = tools.swap_buffer(buffer);
             return buffer;
         }
-        public int[,] execute_ca_floodfill(int _width, int _height, int[,] grid, int[] param)
+        public int[,] execute_ca_floodfill(int _width, int _height, int[,] grid)
         {
             buffer = tools.gen_grid(_width, _height);
             List<int> neighbourVals = new List<int>();
@@ -106,13 +108,65 @@ namespace WorldGen.World_Generation
             //grid = tools.swap_buffer(grid);
             return buffer;
         }
+        public int[,] execute_traditional_floodfill(int _width, int _height, int[,] grid)
+        {
+            int[,] buffer = tools.gen_grid(_width, _height);
+            for (int x = 0; x < _width; x++)
+            {
+                for (int y = 0; y < _height; y++)
+                {
+                    buffer[x, y] = grid[x, y];
+                }
+            }
+            if (queue.Count == 0)
+            {
+                return grid;
+            }
+            int steps_this_turn = queue.Count;
+            for (int c = 0; c < steps_this_turn; c++)
+            //while (queue.Count != 0)
+            {
+                int[] coords = queue[0];
+                int i = coords[0];
+                int j = coords[1];
+                queue.RemoveAt(0);
+                if (!targets.Contains(buffer[i, j]))
+                {
+                    return buffer;
+                }
+                foreach (int[] neighbour in neighbourhood)
+                {
+                    int ni = i + neighbour[0];
+                    int nj = j + neighbour[1];
+                    if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && buffer[ni, nj] == 0)
+                    {
+                        buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + 1;
+                        targets.Add(buffer[ni, nj]);
+                        queue.Add(new int[] { ni, nj });
+                        //    queue.Add(new int[] { ni, nj });
+                        //if (tools.rnd.Next(0,10) > 6)
+                        //{
+                        //    buffer[ni, nj] = buffer[i, j];
+                        //    queue.Add(new int[] { ni, nj });
+                        //}
+                        //else
+                        //{
+                        //    queue.Add(new int[] { i, j });
+                        //}
+                    }
+                }
+            }
+
+            
+            return buffer;
+        }
         public int[,] step(int _width, int _height, int[,] grid)
         {
             if (steps.Count == 0)
             {
                 return grid;
             }
-            int[,] gridNext = steps[0](_width, _height, grid, new int[] { });
+            int[,] gridNext = steps[0](_width, _height, grid);
             steps.RemoveAt(0);
             any_changes(_width, _height, grid, gridNext);
             return gridNext;
@@ -126,6 +180,7 @@ namespace WorldGen.World_Generation
                     if (grid[i,j] != gridNext[i,j])
                     {
                         gens_eq = 0;
+                        return;
                     }
                 }
             }
