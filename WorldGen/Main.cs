@@ -25,8 +25,8 @@ namespace WorldGen
 
         private bool rule_saved = false;
 
-        private int _width = 250;
-        private int _height = 250;
+        private int _width = 100;
+        private int _height = 75;
         private Generator generator;
         private int generation = 0;
 
@@ -50,7 +50,7 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 2;
+            _pixelWidth = 8;
             button_pressed = false;
             // TODO: Add your initialization logic here
             //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
@@ -72,7 +72,7 @@ namespace WorldGen
             // find "shoreline" and add each cell to queue
             // flood-fill-slope from edge of "islands"
             grid = tools.randomise_grid(_width, _height);
-            grid = tools.add_border(_width, _height, grid, 5, 0);
+            grid = tools.add_border(_width, _height, grid, _width / 20, 0);
             generator.push_rule(rule);
             generator.push_action(generator.execute_ca);
 
@@ -168,7 +168,7 @@ namespace WorldGen
 
 
             //do this until islands are formed, then find the shore and execute flood fill w slope solver
-
+            //Debug.WriteLine(generator.gens_eq);
 
             if (phase == 0)
             {
@@ -177,23 +177,34 @@ namespace WorldGen
                 Debug.WriteLine($"equilibrium for {generator.gens_eq} gens");
                 if (generator.gens_eq == 10)
                 {
+                    generator.gens_eq = 0;
                     //first need to flood fill to fine "ocean"!!!
                     generator.set_neighbourhood(neighbourhoods.von_neumann);
-                    grid[0, 0] = -1;
+                    grid[0, 0] = -1;                 
+                    grid[_width - 1, 0] = -1;
+                    grid[0, _height - 1] = -1;
+                    grid[_width - 1, _height - 1] = -1;
+
                     generator.queue.Add(new int[] { 0, 0 });
+                    generator.queue.Add(new int[] { _width - 1, 0 });
+                    generator.queue.Add(new int[] { 0, _height - 1 });
+                    generator.queue.Add(new int[] { _width - 1, _height - 1 });
                     generator.clear_steps();
                     //generator.populate_queue_for_slope_fill(_width, _height, grid);
                     phase++;
+                    generator.visited.Clear();
+                    Debug.WriteLine("PHASE 1");
                 }
             }
-            else
+            else if (phase == 1)
             {
                 if (generator.queue.Count == 0)
                 {
+                    generator.set_neighbourhood(neighbourhoods.moore);
                     bool placed = false;
                     for (int i = 0; i < _width; i++)
                     {
-                        for (int j = 0; j < _width; j++)
+                        for (int j = 0; j < _height; j++)
                         {
                             if (grid[i,j] == 0)
                             {
@@ -210,6 +221,20 @@ namespace WorldGen
                         }
                     }
                 }
+                generator.push_action(generator.execute_traditional_floodfill);
+                if (generator.gens_eq == 100)
+                {
+                    phase++;
+                    generator.visited.Clear();
+                    generator.set_neighbourhood(neighbourhoods.moore);
+                    generator.clear_steps();
+                    generator.populate_queue_for_slope_fill(_width, _height, grid);
+                }
+            }
+            else
+            {
+                //generator.clear_steps();
+                Debug.WriteLine(generator.queue.Count);
                 generator.push_action(generator.execute_traditional_floodfill);
             }
 

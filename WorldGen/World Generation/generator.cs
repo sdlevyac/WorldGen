@@ -23,12 +23,14 @@ namespace WorldGen.World_Generation
         public bool eq = false; // is the system in equilibrium? after each step this will be evaluated
         public int gens_eq = 0;
         public List<int[]> queue;
+        public List<string> visited;
         public Generator(string name = "unnamed generator")
         {
             _name = name;
             rules = new List<int[]>();
             steps = new List<Func<int, int, int[,], int[,]>>();
             queue = new List<int[]>();
+            visited = new List<string>();
         }
         public void push_rule(int[] _rule)
         {
@@ -131,27 +133,33 @@ namespace WorldGen.World_Generation
                 int i = coords[0];
                 int j = coords[1];
                 queue.RemoveAt(0);
+                visited.Add($"{i},{j}");
                 foreach (int[] neighbour in neighbourhood)
                 {
                     int ni = i + neighbour[0];
                     int nj = j + neighbour[1];
-                    if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && buffer[ni, nj] == 0)
+                    if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && !visited.Contains($"{ni},{nj}"))
                     {
-                        if (grid[i, j] < 0)
+                        if (grid[i, j] < 0 && buffer[ni,nj] == 0)
                         {
                             buffer[ni, nj] = grid[i, j];
                             queue.Add(new int[] { ni, nj });
                         }
-                        else if (tools.rnd.Next(0, 10) > -1)
+                        else if (buffer[ni, nj] > 0 && grid[i,j] >= buffer[ni,nj])
                         {
-                            buffer[ni, nj] = buffer[i, j] == -1 ? -1 : Math.Max(0, buffer[i, j] + tools.rnd.Next(-1,3));
+
+                            buffer[i, j] = grid[i, j];
+                            buffer[ni, nj] =  grid[i, j] + 1;
                             //targets.Add(buffer[ni, nj]);
                             queue.Add(new int[] { ni, nj });
                         }
-                        else
-                        {
-                            queue.Add(new int[] { i, j });
-                        }
+                        //else if (tools.rnd.Next(0, 10) > -1)
+                        //{
+                        //    buffer[ni, nj] = grid[i, j] < 0 ? grid[i,j] : Math.Max(0, grid[i, j] + tools.rnd.Next(-1,3));
+                        //    //targets.Add(buffer[ni, nj]);
+                        //    queue.Add(new int[] { ni, nj });
+                        //}
+
                     }
                 }
             }
@@ -185,7 +193,7 @@ namespace WorldGen.World_Generation
                     }
                 }
             }
-            if (changes < (_width * _width) )/// 100)
+            if (changes < 1)
             {
                 gens_eq++;
             }
