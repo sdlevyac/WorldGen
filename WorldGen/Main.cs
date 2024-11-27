@@ -24,8 +24,8 @@ namespace WorldGen
 
         private bool rule_saved = false;
 
-        private int _width = 50;
-        private int _height = 50;
+        private int _width = 250;
+        private int _height = 250;
         private Generator generator;
         private int generation = 0;
 
@@ -49,12 +49,12 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 10;
+            _pixelWidth = 2;
             button_pressed = false;
             // TODO: Add your initialization logic here
             //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
-            generator.set_neighbourhood(neighbourhoods.moore);
+            generator.set_neighbourhood(neighbourhoods.test3);//cross);//moore);
             //generator.push_rule(rule);
 
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
@@ -177,7 +177,11 @@ namespace WorldGen
                 if (generator.gens_eq == 10)
                 {
                     //first need to flood fill to fine "ocean"!!!
-                    generator.populate_queue_for_slope_fill(_width, _height, grid);
+                    generator.set_neighbourhood(neighbourhoods.von_neumann);
+                    grid[0, 0] = -1;
+                    generator.queue.Add(new int[] { 0, 0 });
+                    generator.clear_steps();
+                    //generator.populate_queue_for_slope_fill(_width, _height, grid);
                     phase++;
                 }
             }

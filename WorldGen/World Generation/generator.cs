@@ -42,6 +42,10 @@ namespace WorldGen.World_Generation
         {
             neighbourhood = _neighbourhood;
         }
+        public void clear_steps()
+        {
+            steps.Clear();
+        }
         public int[,] execute_ca(int _width, int _height, int[,] grid)
         {
             rule = rules[0];
@@ -131,9 +135,14 @@ namespace WorldGen.World_Generation
                 {
                     int ni = i + neighbour[0];
                     int nj = j + neighbour[1];
-                    if (ni >= 0 && ni < _width && nj >= 0 && nj < _height )//&& buffer[ni, nj] == 0)
+                    if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && buffer[ni, nj] == 0)
                     {
-                        if (tools.rnd.Next(0, 10) > 8)
+                        if (grid[i, j] == -1)
+                        {
+                            buffer[ni, nj] = -1;
+                            queue.Add(new int[] { ni, nj });
+                        }
+                        else if (tools.rnd.Next(0, 10) > -1)
                         {
                             buffer[ni, nj] = buffer[i, j] == -1 ? -1 : Math.Max(0, buffer[i, j] + tools.rnd.Next(-1,3));
                             //targets.Add(buffer[ni, nj]);
@@ -163,18 +172,27 @@ namespace WorldGen.World_Generation
         }
         private void any_changes(int _width, int _height, int[,] grid, int[,] gridNext)
         {
+            int changes = 0;
             for (int i = 0; i < _width; i++)
             {
                 for (int j = 0; j < _height; j++)
                 {
                     if (grid[i,j] != gridNext[i,j])
                     {
-                        gens_eq = 0;
-                        return;
+                        changes++;
+                        //gens_eq = 0;
+                        //return;
                     }
                 }
             }
-            gens_eq++;
+            if (changes < (_width * _width) )/// 100)
+            {
+                gens_eq++;
+            }
+            else
+            {
+                gens_eq = 0;
+            }
         }
 
         public void populate_queue_for_slope_fill(int _width, int _height, int[,] grid)
