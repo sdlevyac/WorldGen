@@ -147,11 +147,20 @@ namespace WorldGen.World_Generation
                         }
                         else if (buffer[ni, nj] > 0 && grid[i,j] >= buffer[ni,nj])
                         {
-
-                            buffer[i, j] = grid[i, j];
-                            buffer[ni, nj] =  grid[i, j] + 1;
-                            //targets.Add(buffer[ni, nj]);
-                            queue.Add(new int[] { ni, nj });
+                            if (tools.rnd.Next(0,100) > 35)
+                            {
+                                buffer[i, j] = grid[i, j];
+                                buffer[ni, nj] = grid[i, j] + tools.rnd.Next(0,3);
+                                //targets.Add(buffer[ni, nj]);
+                                queue.Add(new int[] { ni, nj });
+                            }
+                            else
+                            {
+                                if (!visited.Contains($"{i},{j}"))
+                                {
+                                    queue.Add(new int[] { i, j });
+                                }
+                            }
                         }
                         //else if (tools.rnd.Next(0, 10) > -1)
                         //{
@@ -218,7 +227,7 @@ namespace WorldGen.World_Generation
                         if (ni >= 0 && ni < _width &&
                             nj >= 0 && nj < _height)
                         {
-                            if (grid[ni,nj] != grid[i,j])
+                            if (grid[ni,nj] == -1)//!= grid[i,j])
                             {
                                 neighbours++;
                             }

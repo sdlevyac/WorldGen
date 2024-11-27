@@ -34,11 +34,12 @@ namespace WorldGen.General
         public static int[,] randomise_grid(int width, int height)
         {
             int[,] grid = gen_grid(width, height);
+            int cutoff = 56;
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
-                    grid[i, j] = rnd.Next(2);
+                    grid[i, j] = rnd.Next(0,100) > cutoff ? 0 : 1;
                 }
             }
             return grid;
@@ -54,6 +55,17 @@ namespace WorldGen.General
                     {
                         grid[i, j] = borderVal;
                     }
+                }
+            }
+            return grid;
+        }
+        public static int[,] fill_lakes(int width, int height, int[,] grid)
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    grid[i, j] = grid[i, j] < -1 ? 1 : grid[i, j];
                 }
             }
             return grid;

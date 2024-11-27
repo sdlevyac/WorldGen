@@ -25,8 +25,8 @@ namespace WorldGen
 
         private bool rule_saved = false;
 
-        private int _width = 100;
-        private int _height = 75;
+        private int _width = 200;
+        private int _height = 100;
         private Generator generator;
         private int generation = 0;
 
@@ -50,7 +50,7 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 8;
+            _pixelWidth = 16;
             button_pressed = false;
             // TODO: Add your initialization logic here
             //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
@@ -76,7 +76,7 @@ namespace WorldGen
             generator.push_rule(rule);
             generator.push_action(generator.execute_ca);
 
-            TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
+            TargetElapsedTime = TimeSpan.FromSeconds(1d / 15d);
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = _width * _pixelWidth;
             _graphics.PreferredBackBufferHeight = _height * _pixelWidth;
@@ -226,7 +226,7 @@ namespace WorldGen
                 {
                     phase++;
                     generator.visited.Clear();
-                    generator.set_neighbourhood(neighbourhoods.moore);
+                    generator.set_neighbourhood(neighbourhoods.von_neumann);
                     generator.clear_steps();
                     generator.populate_queue_for_slope_fill(_width, _height, grid);
                 }
