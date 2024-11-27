@@ -23,8 +23,20 @@ namespace WorldGen.Drawing
         }
         public static void draw_cell_region(int i, int j, int value, int _pixelWidth, SpriteBatch _spriteBatch, Texture2D rect)
         {
-            value = value == 0 ? colours.region_colours.Length - 1 : tools.mod(value, colours.region_colours.Length - 1);
-            _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.region_colours[value]);
+            if (value == -1)
+            {
+                _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.ocean_colours[0]);
+            }
+            else if (value < -1)
+            {
+                value = tools.mod(value, colours.region_colours.Length - 1);
+                _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.lake_colours[value]);
+            }
+            else
+            {
+                value = value == 0 ? colours.region_colours.Length - 1 : tools.mod(value, colours.region_colours.Length - 1);
+                _spriteBatch.Draw(rect, new Rectangle(i * _pixelWidth, j * _pixelWidth, _pixelWidth, _pixelWidth), colours.region_colours[value]);
+            }
         }
     }
 }

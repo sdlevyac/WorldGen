@@ -19,10 +19,14 @@ namespace WorldGen.Drawing
 
         public static Color[] region_colours = new Color[]
         {
+            Color.DarkOliveGreen,
+            Color.Black,
+        };
+        public static Color[] lake_colours = new Color[]
+        {
             Color.CadetBlue,
             Color.CornflowerBlue,
             Color.Coral,
-            Color.LightBlue,
             Color.LightCoral,
             Color.LightCyan,
             Color.LightGoldenrodYellow,
@@ -32,7 +36,10 @@ namespace WorldGen.Drawing
             Color.LightSeaGreen,
             Color.LightSkyBlue,
             Color.LightYellow,
-            Color.Black,
+        };
+        public static Color[] ocean_colours = new Color[]
+        {
+            Color.LightBlue,
         };
     }
 }
