@@ -32,7 +32,7 @@ namespace WorldGen
         private string colourMode = "regions";
         private Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>> colourModes;
 
-        private int[] rule = rules.conway; //rules.random_rules();
+        private int[] rule = rules.caves;//rules.conway; //rules.random_rules();
         //private int[][] neighbourhood = neighbourhoods.moore;
         private int[,] grid;
 
@@ -47,29 +47,33 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 4;
+            _pixelWidth = 2;
             button_pressed = false;
             // TODO: Add your initialization logic here
-            grid = tools.rectangle(_width, _height); //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
+            //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
-            generator.set_neighbourhood(neighbourhoods.von_neumann);
-            generator.push_rule(rule);
+            generator.set_neighbourhood(neighbourhoods.moore);
+            //generator.push_rule(rule);
 
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
             colourModes["1bit"] = drawing.draw_cell_1bit;
             colourModes["gradient"] = drawing.draw_cell_gradient;
             colourModes["regions"] = drawing.draw_cell_region;
 
-            basic_rectangle_flood();
+            //basic_rectangle_flood();
+            //testing_circle_flood();
             // random fill on screen
             // apply gap of 0s about 5-ish wide around the edge
             // apply "cave" stabilising rule (like [0,0,0,0,1,2,2,2,2])
             // one equilibrium is reached - flood fill from top left to find "ocean"
             // find "shoreline" and add each cell to queue
             // flood-fill-slope from edge of "islands"
+            grid = tools.randomise_grid(_width, _height);
+            grid = tools.add_border(_width, _height, grid, 25, 0);
+            generator.push_rule(rule);
+            generator.push_action(generator.execute_ca);
 
-
-            TargetElapsedTime = TimeSpan.FromSeconds(1d / 100d);
+            TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = _width * _pixelWidth;
             _graphics.PreferredBackBufferHeight = _height * _pixelWidth;
@@ -78,10 +82,20 @@ namespace WorldGen
         }
         private void basic_rectangle_flood()
         {
+            grid = tools.rectangle(_width, _height);
             generator.push_action(generator.execute_traditional_floodfill);
             int x = 0; //_width / 2; // 0;
             int y = 0; // _height / 2; //0;
             grid[x, y] = -1;
+            generator.queue.Add(new int[] { x, y });
+        }
+        private void testing_circle_flood()
+        {
+            grid = tools.circle(_width, _height);
+            generator.push_action(generator.execute_traditional_floodfill);
+            int x = 0;
+            int y = 0;
+            grid[x,y] = -1;
             generator.queue.Add(new int[] { x, y });
         }
         protected override void LoadContent()
@@ -118,40 +132,59 @@ namespace WorldGen
             }
             if (IsKeyPressed(Keys.D))
             {
-                if (colourMode == "1bit")
-                {
-                    colourMode = "gradient";
-                }
-                else if (colourMode == "gradient")
-                {
-                    colourMode = "regions";
-                }
-                else
+                if (IsKeyPressed(Keys.D1))
                 {
                     colourMode = "1bit";
                 }
+                else if (IsKeyPressed(Keys.D2))
+                {
+                    colourMode = "regions";
+                }
+                else if (IsKeyPressed(Keys.D3))
+                {
+                    colourMode = "gradient";
+                }
+                //if (colourMode == "1bit")
+                //{
+                //    colourMode = "gradient";
+                //}
+                //else if (colourMode == "gradient")
+                //{
+                //    colourMode = "regions";
+                //}
+                //else
+                //{
+                //    colourMode = "1bit";
+                //}
             }
 
             // TODO: Add your update logic here
             generation = (generation + 1) % 5;
             grid = generator.step(_width, _height, grid);
             //generator.push_action(generator.execute_ca);
-            generator.push_action(generator.execute_traditional_floodfill);
-            if (generator.gens_eq > 10)
-            {               
-                for (int i = 0; i < _width; i++)
-                {
-                    for (int j = 0; j < _width; j++)
-                    {
-                        if (grid[i, j] == 1)
-                        {
-                            generator.queue.Add(new int[] { i, j });
 
-                        }
-                    }
-                }
-                generator.push_action(generator.execute_traditional_floodfill);
-            }           
+
+            //do this until islands are formed, then find the shore and execute flood fill w slope solver
+            generator.push_rule(rule);
+            generator.push_action(generator.execute_ca);
+            Debug.WriteLine($"equilibrium for {generator.gens_eq} gens");
+
+            //generator.push_action(generator.execute_traditional_floodfill);
+            //if (generator.gens_eq > 10)
+            //{               
+            //    for (int i = 0; i < _width; i++)
+            //    {
+            //        for (int j = 0; j < _width; j++)
+            //        {
+            //            if (grid[i, j] == 1)
+            //            {
+            //                generator.queue.Add(new int[] { i, j });
+
+            //            }
+            //        }
+            //    }
+            //    generator.push_action(generator.execute_traditional_floodfill);
+            //}           
             base.Update(gameTime);
         }
 

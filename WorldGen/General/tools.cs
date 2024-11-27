@@ -43,6 +43,21 @@ namespace WorldGen.General
             }
             return grid;
         }
+        public static int[,] add_border(int width, int height, int[,] grid, int border, int borderVal)
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    if (i < border || i > width - border ||
+                        j < border || j > height - border)
+                    {
+                        grid[i, j] = borderVal;
+                    }
+                }
+            }
+            return grid;
+        }
         public static int[,] seed_grid(int width, int height, int seed, int seeds)
         {
             int[,] grid = gen_grid(width, height);
@@ -78,6 +93,30 @@ namespace WorldGen.General
                 grid[width_border, j] = 1;
                 grid[width - width_border, j] = 1;
             }
+            return grid;
+        }
+        public static int[,] circle(int width, int height)
+        {
+            int[,] grid = gen_grid(width, height);
+            int width_mid = width / 2;
+            int height_mid = height / 2;
+            float border = 0.45f;
+            int radius = (int)(width * border);
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    int di = width_mid - i;
+                    int dj = height_mid - j;
+                    if (Math.Pow(di,2) + Math.Pow(dj,2) >= Math.Pow(radius, 2) - (width * border) &&
+                        Math.Pow(di, 2) + Math.Pow(dj, 2) <= Math.Pow(radius, 2) + (width * border))
+                    {
+                        grid[i, j] = 1;
+                    }
+                }
+            }
+
+
             return grid;
         }
         public static int mod(int x, int y)

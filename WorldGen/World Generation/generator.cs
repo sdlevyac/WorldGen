@@ -135,7 +135,7 @@ namespace WorldGen.World_Generation
                     {
                         if (tools.rnd.Next(0, 10) > 8)
                         {
-                            buffer[ni, nj] = buffer[i, j] == -1 ? -1 : buffer[i, j] + tools.rnd.Next(0,3);
+                            buffer[ni, nj] = buffer[i, j] == -1 ? -1 : Math.Max(0, buffer[i, j] + tools.rnd.Next(-1,3));
                             //targets.Add(buffer[ni, nj]);
                             queue.Add(new int[] { ni, nj });
                         }

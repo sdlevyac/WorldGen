@@ -20,6 +20,8 @@ namespace WorldGen.Cells
         //testing...
         public static int[] flood = new int[] { 2, 1, 1, 1, 1, 1, 1, 1, 1 };
 
+        public static int[] caves = new int[] { 0, 0, 0, 0, 2, 1, 1, 1, 1 };
+
         public static int[] random_rules()
         {
             //in 1984...
