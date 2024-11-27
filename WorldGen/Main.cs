@@ -20,10 +20,12 @@ namespace WorldGen
         private KeyboardState _previousKeyboardState;
         private bool button_pressed;
 
+        private int phase = 0;
+
         private bool rule_saved = false;
 
-        private int _width = 250;
-        private int _height = 250;
+        private int _width = 50;
+        private int _height = 50;
         private Generator generator;
         private int generation = 0;
 
@@ -47,7 +49,7 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 2;
+            _pixelWidth = 10;
             button_pressed = false;
             // TODO: Add your initialization logic here
             //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
@@ -69,7 +71,7 @@ namespace WorldGen
             // find "shoreline" and add each cell to queue
             // flood-fill-slope from edge of "islands"
             grid = tools.randomise_grid(_width, _height);
-            grid = tools.add_border(_width, _height, grid, 25, 0);
+            grid = tools.add_border(_width, _height, grid, 5, 0);
             generator.push_rule(rule);
             generator.push_action(generator.execute_ca);
 
@@ -165,9 +167,24 @@ namespace WorldGen
 
 
             //do this until islands are formed, then find the shore and execute flood fill w slope solver
-            generator.push_rule(rule);
-            generator.push_action(generator.execute_ca);
-            Debug.WriteLine($"equilibrium for {generator.gens_eq} gens");
+
+
+            if (phase == 0)
+            {
+                generator.push_rule(rule);
+                generator.push_action(generator.execute_ca);
+                Debug.WriteLine($"equilibrium for {generator.gens_eq} gens");
+                if (generator.gens_eq == 10)
+                {
+                    //first need to flood fill to fine "ocean"!!!
+                    generator.populate_queue_for_slope_fill(_width, _height, grid);
+                    phase++;
+                }
+            }
+            else
+            {
+                generator.push_action(generator.execute_traditional_floodfill);
+            }
 
             //generator.push_action(generator.execute_traditional_floodfill);
             //if (generator.gens_eq > 10)

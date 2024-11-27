@@ -131,7 +131,7 @@ namespace WorldGen.World_Generation
                 {
                     int ni = i + neighbour[0];
                     int nj = j + neighbour[1];
-                    if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && buffer[ni, nj] == 0)
+                    if (ni >= 0 && ni < _width && nj >= 0 && nj < _height )//&& buffer[ni, nj] == 0)
                     {
                         if (tools.rnd.Next(0, 10) > 8)
                         {
@@ -175,6 +175,35 @@ namespace WorldGen.World_Generation
                 }
             }
             gens_eq++;
+        }
+
+        public void populate_queue_for_slope_fill(int _width, int _height, int[,] grid)
+        {
+            int neighbours;
+            for (int i = 0; i < _width; i++)
+            {
+                for (int j = 0; j < _height; j++)
+                {
+                    neighbours = 0;
+                    foreach (int[] neighbour in neighbourhood)
+                    {
+                        int ni = i + neighbour[0];
+                        int nj = j + neighbour[1];
+                        if (ni >= 0 && ni < _width &&
+                            nj >= 0 && nj < _height)
+                        {
+                            if (grid[ni,nj] != grid[i,j])
+                            {
+                                neighbours++;
+                            }
+                        }
+                    }
+                    if (neighbours != 0)
+                    {
+                        queue.Add(new int[] { i, j });
+                    }
+                }
+            }
         }
     }
 }
