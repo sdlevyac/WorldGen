@@ -137,9 +137,9 @@ namespace WorldGen.World_Generation
                     int nj = j + neighbour[1];
                     if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && buffer[ni, nj] == 0)
                     {
-                        if (grid[i, j] == -1)
+                        if (grid[i, j] < 0)
                         {
-                            buffer[ni, nj] = -1;
+                            buffer[ni, nj] = grid[i, j];
                             queue.Add(new int[] { ni, nj });
                         }
                         else if (tools.rnd.Next(0, 10) > -1)

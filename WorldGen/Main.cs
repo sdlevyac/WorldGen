@@ -21,6 +21,7 @@ namespace WorldGen
         private bool button_pressed;
 
         private int phase = 0;
+        private int lake = -2;
 
         private bool rule_saved = false;
 
@@ -54,7 +55,7 @@ namespace WorldGen
             // TODO: Add your initialization logic here
             //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
-            generator.set_neighbourhood(neighbourhoods.test3);//cross);//moore);
+            generator.set_neighbourhood(neighbourhoods.moore);
             //generator.push_rule(rule);
 
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
@@ -187,6 +188,28 @@ namespace WorldGen
             }
             else
             {
+                if (generator.queue.Count == 0)
+                {
+                    bool placed = false;
+                    for (int i = 0; i < _width; i++)
+                    {
+                        for (int j = 0; j < _width; j++)
+                        {
+                            if (grid[i,j] == 0)
+                            {
+                                grid[i, j] = lake;
+                                lake--;
+                                generator.queue.Add(new int[] { i, j });
+                                placed = true;
+                                break;
+                            }
+                        }
+                        if (placed)
+                        {
+                            break;
+                        }
+                    }
+                }
                 generator.push_action(generator.execute_traditional_floodfill);
             }
 
