@@ -169,5 +169,30 @@ namespace WorldGen.General
         {
             return value == 0 ? 0 : 1;
         }
+        public static bool ListContains(List<int[]> list, int[] item)
+        {
+            bool contains = false;
+            for (int i = 0; i < list.Count; i++)
+            {
+                int[] thisItem = list[i];
+                if (thisItem.Length != item.Length)
+                {
+                    continue;
+                }
+                for (int j = 0; j < thisItem.Length; j++)
+                {
+                    if (thisItem[j] == item[j])
+                    {
+                        contains = true;
+                    }
+                    else
+                    {
+                        contains = false;
+                        break;
+                    }
+                }
+            }
+            return contains;
+        }
     }
 }

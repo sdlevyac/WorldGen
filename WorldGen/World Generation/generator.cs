@@ -140,17 +140,22 @@ namespace WorldGen.World_Generation
                     int nj = j + neighbour[1];
                     if (ni >= 0 && ni < _width && nj >= 0 && nj < _height && !visited.Contains($"{ni},{nj}"))
                     {
+                        
                         if (grid[i, j] < 0 && buffer[ni,nj] == 0)
                         {
                             buffer[ni, nj] = grid[i, j];
                             queue.Add(new int[] { ni, nj });
                         }
-                        else if (buffer[ni, nj] > 0 && grid[i,j] >= buffer[ni,nj])
+                        else if (buffer[ni, nj] > 0 && !tools.ListContains(queue, new int[] { ni, nj }) && grid[i,j] >= buffer[ni,nj])
                         {
-                            if (tools.rnd.Next(0,100) > 35)
+                            //buffer[i, j] = grid[i, j];
+                            //buffer[ni, nj] = grid[i, j] + tools.rnd.Next(0,3);
+                            //queue.Add(new int[] { ni, nj });
+                            if (tools.rnd.Next(0, 100) > 35)
                             {
+                                visited.Add($"{ni},{nj}");
                                 buffer[i, j] = grid[i, j];
-                                buffer[ni, nj] = grid[i, j] + tools.rnd.Next(0,3);
+                                buffer[ni, nj] = grid[i, j] + tools.rnd.Next(0, 3);
                                 //targets.Add(buffer[ni, nj]);
                                 queue.Add(new int[] { ni, nj });
                             }
@@ -235,10 +240,36 @@ namespace WorldGen.World_Generation
                     }
                     if (neighbours != 0)
                     {
-                        queue.Add(new int[] { i, j });
+                        queue.Add(new int[] { i, j });                       
                     }
                 }
             }
+        }
+        public int[,] mark_as_unsolved(int _width, int _height, int[,] grid)
+        {
+            int[,] buffer = tools.gen_grid(_width, _height);
+            for (int i = 0; i < _width; i++)
+            {
+                for (int j = 0; j < _height; j++)
+                {
+                    if (grid[i,j] == 1)
+                    {
+                        if (tools.ListContains(queue, new int[] { i, j }))
+                        {
+                            buffer[i, j] = grid[i, j];
+                        }
+                        else
+                        {
+                            buffer[i, j] = 0;
+                        }
+                    }
+                    else
+                    {
+                        buffer[i, j] = grid[i, j];
+                    }
+                }
+            }
+            return buffer;
         }
     }
 }

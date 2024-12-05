@@ -25,7 +25,7 @@ namespace WorldGen
 
         private bool rule_saved = false;
 
-        private int _width = 200;
+        private int _width = 100;
         private int _height = 100;
         private Generator generator;
         private int generation = 0;
@@ -50,12 +50,12 @@ namespace WorldGen
 
         protected override void Initialize()
         {
-            _pixelWidth = 16;
+            _pixelWidth = 4;
             button_pressed = false;
             // TODO: Add your initialization logic here
             //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
-            generator.set_neighbourhood(neighbourhoods.moore);
+            generator.set_neighbourhood(neighbourhoods.cross);//moore);
             //generator.push_rule(rule);
 
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();
@@ -72,11 +72,12 @@ namespace WorldGen
             // find "shoreline" and add each cell to queue
             // flood-fill-slope from edge of "islands"
             grid = tools.randomise_grid(_width, _height);
-            grid = tools.add_border(_width, _height, grid, _width / 20, 0);
+
+            grid = tools.add_border(_width, _height, grid, _width / 10, 0);
             generator.push_rule(rule);
             generator.push_action(generator.execute_ca);
 
-            TargetElapsedTime = TimeSpan.FromSeconds(1d / 15d);
+            TargetElapsedTime = TimeSpan.FromSeconds(1d/10d);// / 15d);
             _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = _width * _pixelWidth;
             _graphics.PreferredBackBufferHeight = _height * _pixelWidth;
@@ -169,12 +170,12 @@ namespace WorldGen
 
             //do this until islands are formed, then find the shore and execute flood fill w slope solver
             //Debug.WriteLine(generator.gens_eq);
-
+            Debug.WriteLine($"equilibrium for {generator.gens_eq} gens");
             if (phase == 0)
             {
                 generator.push_rule(rule);
                 generator.push_action(generator.execute_ca);
-                Debug.WriteLine($"equilibrium for {generator.gens_eq} gens");
+                //Debug.WriteLine($"equilibrium for {generator.gens_eq} gens");
                 if (generator.gens_eq == 10)
                 {
                     generator.gens_eq = 0;
@@ -198,6 +199,7 @@ namespace WorldGen
             }
             else if (phase == 1)
             {
+
                 if (generator.queue.Count == 0)
                 {
                     generator.set_neighbourhood(neighbourhoods.moore);
@@ -222,13 +224,14 @@ namespace WorldGen
                     }
                 }
                 generator.push_action(generator.execute_traditional_floodfill);
-                if (generator.gens_eq == 100)
+                if (generator.gens_eq == 10)//0)
                 {
                     phase++;
                     generator.visited.Clear();
                     generator.set_neighbourhood(neighbourhoods.von_neumann);
                     generator.clear_steps();
                     generator.populate_queue_for_slope_fill(_width, _height, grid);
+                    //grid = generator.mark_as_unsolved(_width, _height, grid);
                 }
             }
             else
