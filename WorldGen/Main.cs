@@ -25,8 +25,8 @@ namespace WorldGen
 
         private bool rule_saved = false;
 
-        private int _width = 100;
-        private int _height = 100;
+        private int _width = 250;
+        private int _height = 250;
         private Generator generator;
         private int generation = 0;
 
@@ -55,7 +55,7 @@ namespace WorldGen
             // TODO: Add your initialization logic here
             //tools.seed_grid(_width, _width, 0, 12);//randomise_grid(_width, _height);
             generator = new Generator("test");
-            generator.set_neighbourhood(neighbourhoods.cross);//moore);
+            generator.set_neighbourhood(neighbourhoods.moore);
             //generator.push_rule(rule);
 
             colourModes = new Dictionary<string, Action<int, int, int, int, SpriteBatch, Texture2D>>();

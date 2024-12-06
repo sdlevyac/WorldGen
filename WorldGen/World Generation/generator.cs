@@ -151,11 +151,11 @@ namespace WorldGen.World_Generation
                             //buffer[i, j] = grid[i, j];
                             //buffer[ni, nj] = grid[i, j] + tools.rnd.Next(0,3);
                             //queue.Add(new int[] { ni, nj });
-                            if (tools.rnd.Next(0, 100) > 35)
+                            if (tools.rnd.Next(0, 100) > 25)
                             {
                                 visited.Add($"{ni},{nj}");
                                 buffer[i, j] = grid[i, j];
-                                buffer[ni, nj] = grid[i, j] + tools.rnd.Next(0, 3);
+                                buffer[ni, nj] = grid[i, j] +  tools.rnd.Next(0, 3);
                                 //targets.Add(buffer[ni, nj]);
                                 queue.Add(new int[] { ni, nj });
                             }
@@ -232,7 +232,7 @@ namespace WorldGen.World_Generation
                         if (ni >= 0 && ni < _width &&
                             nj >= 0 && nj < _height)
                         {
-                            if (grid[ni,nj] == -1)//!= grid[i,j])
+                            if (grid[ni,nj] < 0)//== -1)//!= grid[i,j])
                             {
                                 neighbours++;
                             }
